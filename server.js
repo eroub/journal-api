@@ -7,12 +7,12 @@ dotenv.config();
 const app = express();
 
 // User CORS and BodyParser
-if(process.env.APP_URL) {
-  const urlWithoutTrailingSlash = process.env.APP_URL.endsWith('/') ? process.env.APP_URL.slice(0, -1) : process.env.APP_URL;
-  app.use(cors({origin: urlWithoutTrailingSlash}))
-} else {
+// if(process.env.APP_URL) {
+  // const urlWithoutTrailingSlash = process.env.APP_URL.endsWith('/') ? process.env.APP_URL.slice(0, -1) : process.env.APP_URL;
+  // app.use(cors({origin: urlWithoutTrailingSlash}))
+// } else {
   app.use(cors());
-}
+// }
 
 app.use(express.json());
 
@@ -40,5 +40,6 @@ app.get('/api/trades', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
+  console.log('CORS headers:', res.getHeaders());
   console.log(`Server is running on port ${PORT}`);
 });
