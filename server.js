@@ -16,6 +16,14 @@ const app = express();
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.once('finish', () => {
+    console.log('CORS headers:', res.getHeaders());
+  });
+  next();
+});
+
+
 const Trade = require('./trade');
 
 // Create a new trade entry
@@ -40,6 +48,5 @@ app.get('/api/trades', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log('CORS headers:', res.getHeaders());
   console.log(`Server is running on port ${PORT}`);
 });
