@@ -7,12 +7,19 @@ dotenv.config();
 const app = express();
 
 // User CORS and BodyParser
-if(process.env.APP_URL) {
-  const urlWithoutTrailingSlash = process.env.APP_URL.endsWith('/') ? process.env.APP_URL.slice(0, -1) : process.env.APP_URL;
-  app.use(cors({origin: urlWithoutTrailingSlash}))
-} else {
-  app.use(cors());
-}
+const allowedOrigins = ['http://roubekas.com', 'http://www.roubekas.com'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 
 app.use(express.json());
 
