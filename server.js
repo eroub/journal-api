@@ -9,17 +9,10 @@ const app = express();
 // User CORS and BodyParser
 const allowedOrigins = ['http://roubekas.com', 'http://www.roubekas.com'];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+app.app.use(cors({
+  origin: '*',
   credentials: true
 }));
-
 
 app.use(express.json());
 
