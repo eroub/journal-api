@@ -1,36 +1,102 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('./sequelize');
 
-const Trade = sequelize.define('trades', {
-  datetime_opened: {
+const Trade = sequelize.define('trade_journal', {
+  ID: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  Datetime_In: {
     type: DataTypes.DATE
   },
-  datetime_closed: {
+  Datetime_Out: {
     type: DataTypes.DATE
   },
-  ticker: {
+  Total_Hrs: {
+    type: DataTypes.FLOAT
+  },
+  Ticker: {
     type: DataTypes.STRING
   },
-  equity: {
-    type: DataTypes.DECIMAL(18, 2)
+  Direction: {
+    type: DataTypes.ENUM('Long', 'Short')
   },
-  avg_entry: {
-    type: DataTypes.DECIMAL(18, 5)
+  Equity: {
+    type: DataTypes.FLOAT
   },
-  stop: {
-    type: DataTypes.DECIMAL(18, 5)
+  Entry: {
+    type: DataTypes.FLOAT
   },
-  target: {
-    type: DataTypes.DECIMAL(18, 5)
+  Stop_Loss: {
+    type: DataTypes.FLOAT
   },
-  close: {
-    type: DataTypes.DECIMAL(18, 5)
+  Target: {
+    type: DataTypes.FLOAT
   },
-  size: {
-    type: DataTypes.DECIMAL(18, 5)
+  Size: {
+    type: DataTypes.INTEGER
   },
-  real_pnl: {
-    type: DataTypes.DECIMAL(18, 5)
+  Risk: {
+    type: DataTypes.FLOAT
+  },
+  Risk_USD: {
+    type: DataTypes.FLOAT
+  
+  },
+  Est_Gain: {
+    type: DataTypes.FLOAT
+  },
+  Est_Gain_USD: {
+    type: DataTypes.FLOAT
+  },
+  Est_RR: {
+    type: DataTypes.FLOAT
+  },
+  Exit_Price: {
+    type: DataTypes.FLOAT
+  },
+  Proj_PL: {
+    type: DataTypes.FLOAT
+  },
+  Proj_PL_USD: {
+    type: DataTypes.FLOAT
+  },
+  Real_PL: {
+    type: DataTypes.FLOAT
+  },
+  Commission: {
+    type: DataTypes.FLOAT
+  },
+  Percent_Change: {
+    type: DataTypes.FLOAT
+  },
+  Real_RR: {
+    type: DataTypes.FLOAT
+  },
+  Pips: {
+    type: DataTypes.FLOAT
+  },
+  MFE: {
+    type: DataTypes.FLOAT
+  },
+  MAE: {
+    type: DataTypes.FLOAT
+  },
+  MFE_Ratio: {
+    type: DataTypes.FLOAT
+  },
+  MAE_Ratio: {
+    type: DataTypes.FLOAT
+  },
+  Type: {
+    type: DataTypes.TEXT
+  },
+  Screenshot: {
+    type: DataTypes.TEXT
+  },
+  Comment: {
+    type: DataTypes.TEXT
   }
 }, {
   timestamps: false

@@ -7,21 +7,16 @@ dotenv.config();
 const app = express();
 
 // User CORS and BodyParser
-const allowedOrigins = ['http://roubekas.com', 'http://www.roubekas.com', 'http://localhost:3000'];
-
+const allowedOrigins = ['http://roubekas.com', 'http://www.roubekas.com', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']; 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      return callback(new Error('CORS policy violation'), false);
     }
     return callback(null, true);
-  },
-  credentials: true
+  }
 }));
-
 
 app.use(express.json());
 
@@ -48,6 +43,21 @@ app.get('/api/trades', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// For graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received. Shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
 });
