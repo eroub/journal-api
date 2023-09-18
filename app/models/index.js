@@ -16,4 +16,12 @@ const sequelize = new Sequelize('trade_journal', process.env.DB_USER, process.en
   }
 })();
 
-module.exports = sequelize;
+const db = {};
+
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+// Models
+db.Journal = require("./Journal.model.js")(sequelize, Sequelize);
+
+module.exports = db;

@@ -20,27 +20,12 @@ app.use(cors({
 
 app.use(express.json());
 
-const Trade = require('./trade');
+// Connect to DB
+const db = require("./app/models/");
+db.sequelize.sync();
 
-// Create a new trade entry
-app.post('/api/trades', async (req, res) => {
-  try {
-    const trade = await Trade.create(req.body);
-    res.status(201).json(trade);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Get all trade entries
-app.get('/api/trades', async (req, res) => {
-  try {
-    const trades = await Trade.findAll();
-    res.json(trades);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Routing for trades
+require("./app/routes/Journal.routes")(app);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
