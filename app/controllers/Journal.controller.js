@@ -5,8 +5,8 @@ const Journal = db.Journal;
 // Get all trades
 exports.getAllTrades = async (req, res) => {
     try {
-        const trade = await Journal.create(req.body);
-        return res.status(201).json(trade);
+        const trades = await Journal.findAll();
+        return res.status(201).json(trades);
       } catch (error) {
         return res.status(400).json({ error: error.message });
       }

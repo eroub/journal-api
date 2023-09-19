@@ -1,102 +1,138 @@
 module.exports = (sequelize, Sequelize) => {
-  const Trade = sequelize.define('trade_journal', {
-    ID: {
+  const Journal = sequelize.define('trade_journal', {
+    id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      field: 'ID'
     },
-    Datetime_In: {
-      type: Sequelize.DATE
+    datetimeIn: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      field: 'Datetime_In'
     },
-    Datetime_Out: {
-      type: Sequelize.DATE
+    datetimeOut: {
+      type: Sequelize.DATE,
+      field: 'Datetime_Out'
     },
-    Total_Hrs: {
-      type: Sequelize.FLOAT
+    totalHrs: {
+      type: Sequelize.FLOAT,
+      field: 'Total_Hrs'
     },
-    Ticker: {
-      type: Sequelize.STRING
+    ticker: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      field: 'Ticker'
     },
-    Direction: {
-      type: Sequelize.ENUM('Long', 'Short')
+    direction: {
+      type: Sequelize.ENUM('Long', 'Short'),
+      allowNull: false,
+      field: 'Direction'
     },
-    Equity: {
-      type: Sequelize.FLOAT
+    equity: {
+      type: Sequelize.FLOAT,
+      field: 'Equity'
     },
-    Entry: {
-      type: Sequelize.FLOAT
+    entry: {
+      type: Sequelize.FLOAT,
+      field: 'Entry'
     },
-    Stop_Loss: {
-      type: Sequelize.FLOAT
+    stopLoss: {
+      type: Sequelize.FLOAT,
+      field: 'Stop_Loss'
     },
-    Target: {
-      type: Sequelize.FLOAT
+    target: {
+      type: Sequelize.FLOAT,
+      field: 'Target'
     },
-    Size: {
-      type: Sequelize.INTEGER
+    size: {
+      type: Sequelize.INTEGER,
+      field: 'Size'
     },
-    Risk: {
-      type: Sequelize.FLOAT
+    risk: {
+      type: Sequelize.FLOAT,
+      field: 'Risk'
     },
-    Risk_USD: {
-      type: Sequelize.FLOAT
+    riskUSD: {
+      type: Sequelize.FLOAT,
+      field: 'Risk_USD'
     },
-    Est_Gain: {
-      type: Sequelize.FLOAT
+    estGain: {
+      type: Sequelize.FLOAT,
+      field: 'Est_Gain'
     },
-    Est_Gain_USD: {
-      type: Sequelize.FLOAT
+    estGainUSD: {
+      type: Sequelize.FLOAT,
+      field: 'Est_Gain_USD'
     },
-    Est_RR: {
-      type: Sequelize.FLOAT
+    estRR: {
+      type: Sequelize.FLOAT,
+      field: 'Est_RR'
     },
-    Exit_Price: {
-      type: Sequelize.FLOAT
+    exitPrice: {
+      type: Sequelize.FLOAT,
+      field: 'Exit_Price'
     },
-    Proj_PL: {
-      type: Sequelize.FLOAT
+    projPL: {
+      type: Sequelize.FLOAT,
+      field: 'Proj_PL'
     },
-    Proj_PL_USD: {
-      type: Sequelize.FLOAT
+    projPLUSD: {
+      type: Sequelize.FLOAT,
+      field: 'Proj_PL_USD'
     },
-    Real_PL: {
-      type: Sequelize.FLOAT
+    realPL: {
+      type: Sequelize.FLOAT,
+      field: 'Real_PL'
     },
-    Commission: {
-      type: Sequelize.FLOAT
+    commission: {
+      type: Sequelize.FLOAT,
+      field: 'Commission'
     },
-    Percent_Change: {
-      type: Sequelize.FLOAT
+    percentChange: {
+      type: Sequelize.FLOAT,
+      field: 'Percent_Change'
     },
-    Real_RR: {
-      type: Sequelize.FLOAT
+    realRR: {
+      type: Sequelize.FLOAT,
+      field: 'Real_RR'
     },
-    Pips: {
-      type: Sequelize.FLOAT
+    pips: {
+      type: Sequelize.FLOAT,
+      field: 'Pips'
     },
-    MFE: {
-      type: Sequelize.FLOAT
+    mfe: {
+      type: Sequelize.FLOAT,
+      field: 'MFE'
     },
-    MAE: {
-      type: Sequelize.FLOAT
+    mae: {
+      type: Sequelize.FLOAT,
+      field: 'MAE'
     },
-    MFE_Ratio: {
-      type: Sequelize.FLOAT
+    mfeRatio: {
+      type: Sequelize.FLOAT,
+      field: 'MFE_Ratio'
     },
-    MAE_Ratio: {
-      type: Sequelize.FLOAT
+    maeRatio: {
+      type: Sequelize.FLOAT,
+      field: 'MAE_Ratio'
     },
-    Type: {
-      type: Sequelize.TEXT
+    type: {
+      type: Sequelize.TEXT,
+      field: 'Type'
     },
-    Screenshot: {
-      type: Sequelize.TEXT
+    screenshot: {
+      type: Sequelize.TEXT,
+      field: 'Screenshot'
     },
-    Comment: {
-      type: Sequelize.TEXT
+    comment: {
+      type: Sequelize.TEXT,
+      field: 'Comment'
     }
   }, {
     tableName: 'trade_journal',
     timestamps: false
   });
-}
+
+  return Journal;
+};
