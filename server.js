@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const basicAuth = require('express-basic-auth');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -17,6 +18,13 @@ app.use(cors({
     return callback(null, true);
   }
 }));
+
+// Export basic auth middleware
+module.exports.authMiddleware = authMiddleware = basicAuth({
+  users: { [process.env.AUTH_USER]: process.env.AUTH_PASS },
+  challenge: true,
+  unauthorizedResponse: 'Unauthorized'
+});
 
 app.use(express.json());
 
