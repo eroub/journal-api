@@ -128,6 +128,12 @@ module.exports = (sequelize, Sequelize) => {
     comment: {
       type: Sequelize.TEXT,
       field: 'Comment'
+    },
+    status: {
+      type: Sequelize.ENUM('Open', 'Closed'),
+      allowNull: false,
+      defaultValue: 'Open',
+      field: 'Status'
     }
   }, {
     tableName: 'trade_journal',
