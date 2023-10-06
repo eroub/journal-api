@@ -34,11 +34,11 @@ exports.createTrade = async (req, res) => {
 
 // Update a Trade by the id in the request
 exports.updateTrade = async (req, res) => {
-  const tradeID = req.body.ID;
+  const tradeID = req.body.id;
 
   try {
     const [updatedRows] = await Journal.update(req.body, {
-      where: { ID: tradeID }
+      where: { id: tradeID }
     });
 
     if (updatedRows === 0) {

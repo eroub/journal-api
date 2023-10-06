@@ -23,7 +23,20 @@ app.use(cors({
 module.exports.authMiddleware = authMiddleware = basicAuth({
   users: { [process.env.AUTH_USER]: process.env.AUTH_PASS },
   challenge: true,
-  unauthorizedResponse: 'Unauthorized'
+  unauthorizedResponse: function(req) {
+    return req.auth
+      ? ('Credentials for user ' + req.auth.user + ' rejected')
+      : 'Unauthorized: No credentials provided';
+  },
+  authorizeAsync: true,
+  authorizer: (username, password, callback) => {
+    console.log("Authorizing:", username, password);
+    if (username === process.env.AUTH_USER && password === process.env.AUTH_PASS) {
+      return callback(null, true);
+    } else {
+      return callback(null, false);
+    }
+  }  
 });
 
 app.use(express.json());
@@ -31,6 +44,11 @@ app.use(express.json());
 // Connect to DB
 const db = require("./app/models/");
 db.sequelize.sync();
+
+// An endpoint to authenticate users
+app.get('/auth', authMiddleware, (req, res) => {
+  res.status(200).json({ message: 'Authentication successful' });
+});
 
 // Routing for trades
 require("./app/routes/Journal.routes")(app);
