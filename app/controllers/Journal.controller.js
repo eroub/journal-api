@@ -2,6 +2,14 @@
 const db = require("../models/index");
 const Journal = db.Journal;
 
+// This function adjusts a UTC date-time string to be MST (UTC-7)
+const adjustToMST = (utcDateTime) => {
+  const date = new Date(utcDateTime);
+  date.setHours(date.getHours() - 6);  // Subtract 6 hours for MST
+  return date.toISOString();
+};
+
+
 // Get all trades
 exports.getAllTrades = async (req, res) => {
     try {
@@ -17,7 +25,8 @@ exports.createTrade = async (req, res) => {
     // Start a new transaction
     const t = await db.sequelize.transaction();  // Replace `sequelize` with your Sequelize instance if needed
     try {
-      // console.log("Received Data:", req.body);  // Debug: Log the incoming data
+      // Adjust datetime such that it gets inserted as MST
+      req.body.datetimeIn = adjustToMST(req.body.datetimeIn); 
       // Create a new trade within the transaction scope
       const trade = await Journal.create(req.body, { transaction: t });
       // Commit the transaction
@@ -35,8 +44,9 @@ exports.createTrade = async (req, res) => {
 // Update a Trade by the id in the request
 exports.updateTrade = async (req, res) => {
   const tradeID = req.body.id;
-
   try {
+    // Adjust datetime such that it gets inserted as MST
+    req.body.datetimeOut = adjustToMST(req.body.datetimeOut); 
     const [updatedRows] = await Journal.update(req.body, {
       where: { id: tradeID }
     });

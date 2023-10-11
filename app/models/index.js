@@ -4,7 +4,8 @@ dotenv.config();
 
 const sequelize = new Sequelize('trade_journal', process.env.DB_USER, process.env.DB_PASS, {
   host: process.env.DB_SERVER,
-  dialect: 'mysql'
+  dialect: 'mysql',
+  timezone: 'America/Edmonton'
 });
 
 (async () => {
