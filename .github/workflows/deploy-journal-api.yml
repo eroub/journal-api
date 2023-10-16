@@ -24,15 +24,30 @@ jobs:
           cd /var/www/journal-api
           npm install
 
+      - name: Setup SSH Directory and Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 24.199.116.19 >> ~/.ssh/known_hosts
+
       - name: SSH and Deploy
         uses: appleboy/ssh-action@master
         with:
           host: 24.199.116.19
           username: root
           key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: DEPLOY_DIR
           script: |
-            cd /var/www/journal-api
+            cd $DEPLOY_DIR
             git pull origin main
-            npm ci
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
             pm2 delete journal-api || true
             pm2 start npm --name journal-api -- run start
+        env: 
+          DEPLOY_DIR: '/var/www/journal-api'
+
