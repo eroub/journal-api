@@ -6,6 +6,13 @@ module.exports = (sequelize, Sequelize) => {
       autoIncrement: true,
       field: 'ID'
     },
+    accountID: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Account',
+        key: 'accountID'
+      }
+    },
     datetimeIn: {
       type: Sequelize.DATE,
       allowNull: false,

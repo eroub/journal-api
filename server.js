@@ -1,8 +1,12 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
 const cors = require('cors');
 const basicAuth = require('express-basic-auth');
 const dotenv = require('dotenv');
+
+// Authentication
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
 
 dotenv.config();
 const app = express();
@@ -19,25 +23,27 @@ app.use(cors({
   }
 }));
 
-// Export basic auth middleware
-module.exports.authMiddleware = authMiddleware = basicAuth({
-  users: { [process.env.AUTH_USER]: process.env.AUTH_PASS },
-  challenge: true,
-  unauthorizedResponse: function(req) {
-    return req.auth
-      ? ('Credentials for user ' + req.auth.user + ' rejected')
-      : 'Unauthorized: No credentials provided';
-  },
-  authorizeAsync: true,
-  authorizer: (username, password, callback) => {
-    console.log("Authorizing:", username, password);
-    if (username === process.env.AUTH_USER && password === process.env.AUTH_PASS) {
-      return callback(null, true);
-    } else {
-      return callback(null, false);
+// Export JWT middleware
+module.exports.jwtMiddleware = function (req, res, next) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(401).send('No token provided');
+  // Extract the token from the Authorization header
+  const tokenParts = authHeader.split(' ');
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+    return res.status(401).send('Malformed token');
+  }
+  const token = tokenParts[1];
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    console.log("Token:", token);
+    if (err) {
+      console.log("JWT Error:", err);
+      return res.status(401).send('Unauthorized');
     }
-  }  
-});
+    // User is authenticated
+    req.user = decoded;
+    next();
+  });
+};
 
 app.use(express.json());
 
@@ -46,8 +52,24 @@ const db = require("./app/models/");
 db.sequelize.sync();
 
 // An endpoint to authenticate users
-app.get('/auth', authMiddleware, (req, res) => {
-  res.status(200).json({ message: 'Authentication successful' });
+app.post('/auth', async (req, res) => {
+  const { username, password } = req.body;
+
+  // Fetch hashed password from database
+  const query = "SELECT password FROM Users WHERE username = ?";
+  let [rows] = await db.sequelize.query(query, {
+    replacements: [username]
+  });
+  const hashedPassword = rows[0]?.password;
+
+  // Verify password
+  const validCredentials = bcrypt.compareSync(password, hashedPassword);
+  if (validCredentials) {
+    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ token });
+  } else {
+    res.status(401).send('Unauthorized');
+  }
 });
 
 // Routing for trades
