@@ -55,17 +55,18 @@ db.sequelize.sync();
 app.post('/auth', async (req, res) => {
   const { username, password } = req.body;
 
-  // Fetch hashed password from database
-  const query = "SELECT password FROM Users WHERE username = ?";
+  // Fetch hashed password and userID from database
+  const query = "SELECT password, userID FROM Users WHERE username = ?";
   let [rows] = await db.sequelize.query(query, {
     replacements: [username]
   });
   const hashedPassword = rows[0]?.password;
+  const userID = rows[0]?.userID;
 
   // Verify password
   const validCredentials = bcrypt.compareSync(password, hashedPassword);
   if (validCredentials) {
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ username, userID }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.status(200).json({ token });
   } else {
     res.status(401).send('Unauthorized');
