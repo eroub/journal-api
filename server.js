@@ -75,6 +75,10 @@ app.post('/auth', async (req, res) => {
 
 // Routing for trades
 require("./app/routes/Journal.routes")(app);
+// Routing for Users
+require("./app/routes/User.routes")(app);
+// Routing for Transactions
+require("./app/routes/Transactions.routes")(app);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {

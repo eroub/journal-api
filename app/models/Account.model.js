@@ -13,6 +13,8 @@ module.exports = (sequelize, Sequelize) => {
           key: 'userID'
         }
       }
+    }, {
+      timestamps: false
     });
     return Account;
   };

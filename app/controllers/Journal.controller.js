@@ -20,6 +20,39 @@ exports.getAllTrades = async (req, res) => {
       }
 }
 
+// Get all trades for a specific user
+exports.getAllTradesForUser = async (req, res) => {
+  try {
+      const userID = req.user.userID; // Get userID from JWT
+
+      // Fetch trades for the given user across all accounts
+      const trades = await Journal.findAll({
+          where: { userID: userID }
+      });
+
+      return res.status(200).json({ trades });
+  } catch (error) {
+      return res.status(400).json({ error: error.message });
+  }
+};
+
+// Get all trades for a specific account and user
+exports.getAllTradesForAccount = async (req, res) => {
+  try {
+      const accountID = req.params.accountID;
+      const userID = req.user.userID; // Get userID from JWT
+
+      // Fetch trades for the given account and user
+      const trades = await Journal.findAll({
+          where: { accountID: accountID, userID: userID }
+      });
+
+      return res.status(200).json({ trades });
+  } catch (error) {
+      return res.status(400).json({ error: error.message });
+  }
+};
+
 // Create a new trade entry with a transaction
 exports.createTrade = async (req, res) => {
     // Start a new transaction

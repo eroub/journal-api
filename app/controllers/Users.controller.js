@@ -1,4 +1,4 @@
-const db = require("../models/indxex");
+const db = require("../models/index");
 const Account = db.Account;
 const User = db.User;
 const bcrypt = require('bcrypt');
@@ -54,6 +54,25 @@ exports.createTradeAccount = async (req, res) => {
 
         return res.status(201).json({ message: 'New account created', account: newAccount });
     } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+// Get accounts for logged-in user
+exports.getUserAccounts = async (req, res) => {
+    try {
+        const userID = req.user.userID;
+
+        // Fetch accounts for this user
+        const accounts = await Account.findAll({
+            where: {
+                userID: userID
+            }
+        });
+
+        return res.status(200).json(accounts);
+    } catch (error) {
+        console.log(error)
         return res.status(400).json({ error: error.message });
     }
 };
