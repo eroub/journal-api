@@ -52,7 +52,7 @@ const db = require("./app/models/");
 db.sequelize.sync();
 
 // An endpoint to authenticate users
-app.post('/auth', async (req, res) => {
+app.post('/api/auth', async (req, res) => {
   const { username, password } = req.body;
 
   // Fetch hashed password and userID from database
