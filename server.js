@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 // User CORS and BodyParser
-const allowedOrigins = ['http://roubekas.com', 'http://www.roubekas.com', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']; 
+const allowedOrigins = ['http://roubekas.com', 'http://www.roubekas.com', 'https://roubekas.com', 'https://www.roubekas.com', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']; 
 app.use(cors({
   origin: function(origin, callback){
     if(!origin) return callback(null, true);
