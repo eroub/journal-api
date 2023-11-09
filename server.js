@@ -23,6 +23,12 @@ app.use(cors({
   }
 }));
 
+// Middleware to remove unnecessary Permissions-Policy headers
+app.use((req, res, next) => {
+  res.removeHeader('Permissions-Policy');
+  next();
+});
+
 // Export JWT middleware
 module.exports.jwtMiddleware = function (req, res, next) {
   const authHeader = req.headers['authorization'];
