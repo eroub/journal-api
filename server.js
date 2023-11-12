@@ -85,6 +85,8 @@ require("./app/routes/Journal.routes")(app);
 require("./app/routes/User.routes")(app);
 // Routing for Transactions
 require("./app/routes/Transactions.routes")(app);
+// Routing for Accounts
+require("./app/routes/Accounts.routes")(app);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {

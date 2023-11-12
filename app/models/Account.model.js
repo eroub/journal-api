@@ -5,6 +5,16 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         autoIncrement: true
       },
+      equity: {
+        type: Sequelize.DECIMAL(15,2),
+        allowNull: false,
+        defaultValue: 0.00
+      },
+      defaultRiskPercent: {
+        type: Sequelize.DECIMAL(3,2),
+        allowNull: false,
+        defaultValue: 0.00
+      },
       accountName: Sequelize.STRING,
       userID: {
         type: Sequelize.INTEGER,

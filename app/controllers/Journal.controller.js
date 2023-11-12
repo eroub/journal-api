@@ -1,4 +1,4 @@
-// Create a new trade entry
+// Journal.controller.js
 const db = require("../models/index");
 const Journal = db.Journal;
 
