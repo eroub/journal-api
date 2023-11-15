@@ -1,6 +1,7 @@
 // Journal.controller.js
 const db = require("../models/index");
 const Journal = db.Journal;
+const Account = db.Account;
 
 // This function adjusts a UTC date-time string to be MST (UTC-7)
 const adjustToMST = (utcDateTime) => {
@@ -75,25 +76,39 @@ exports.createTrade = async (req, res) => {
 }
 
 // Update a Trade by the id in the request
+// This also updates the accounts equity
 exports.updateTrade = async (req, res) => {
   const tradeID = req.body.id;
+  const accountID = req.body.accountID;
   try {
     // Adjust datetime such that it gets inserted as MST
     req.body.datetimeOut = adjustToMST(req.body.datetimeOut); 
-    const [updatedRows] = await Journal.update(req.body, {
+    const [updatedTradeRows] = await Journal.update(req.body, {
       where: { id: tradeID }
     });
 
-    if (updatedRows === 0) {
+    if (updatedTradeRows === 0) {
       res.status(404).send({
         message: `Cannot update Trade with id=${tradeID}. Maybe Trade was not found or req.body is empty!`
       });
+      return;
+    }
+
+    // Update the account's equity
+    const [updatedAccountRows] = await Account.update({ equity: req.body.postEquity }, {
+      where: { accountID: accountID }
+    });
+
+    if (updatedAccountRows === 0) {
+      res.status(404).send({
+        message: `Cannot update Account with accountID=${accountID}. Maybe Account was not found!`
+      });
     } else {
-      res.send({ message: "Trade was updated successfully." });
+      res.send({ message: "Trade and associated Account were updated successfully." });
     }
   } catch (error) {
     res.status(500).send({
-      message: `Error updating Trade with id=${tradeID}`
+      message: `Error updating Trade with id=${tradeID} or Account with accountID=${accountID}`
     });
   }
 };
