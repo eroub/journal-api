@@ -60,17 +60,9 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.FLOAT,
       field: 'Risk'
     },
-    riskUSD: {
-      type: Sequelize.FLOAT,
-      field: 'Risk_USD'
-    },
     estGain: {
       type: Sequelize.FLOAT,
       field: 'Est_Gain'
-    },
-    estGainUSD: {
-      type: Sequelize.FLOAT,
-      field: 'Est_Gain_USD'
     },
     estRR: {
       type: Sequelize.FLOAT,
@@ -83,10 +75,6 @@ module.exports = (sequelize, Sequelize) => {
     projPL: {
       type: Sequelize.FLOAT,
       field: 'Proj_PL'
-    },
-    projPLUSD: {
-      type: Sequelize.FLOAT,
-      field: 'Proj_PL_USD'
     },
     realPL: {
       type: Sequelize.FLOAT,
