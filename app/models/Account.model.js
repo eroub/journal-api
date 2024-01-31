@@ -22,6 +22,11 @@ module.exports = (sequelize, Sequelize) => {
           model: 'User',
           key: 'userID'
         }
+      },
+      visible: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
       }
     }, {
       timestamps: false
