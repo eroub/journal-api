@@ -87,6 +87,8 @@ require("./app/routes/User.routes")(app);
 require("./app/routes/Transactions.routes")(app);
 // Routing for Accounts
 require("./app/routes/Accounts.routes")(app);
+// Routing for Futures Contract Specs
+require("./app/routes/FuturesContractSpecs.routes")(app);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {

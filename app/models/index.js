@@ -27,7 +27,8 @@ db.sequelize = sequelize;
 db.User = require("./User.model.js")(sequelize, Sequelize);
 db.Account = require("./Account.model.js")(sequelize, Sequelize);
 db.Journal = require("./Journal.model.js")(sequelize, Sequelize);
-db.Transactions = require("./Transactions.model.js")(sequelize, Sequelize);  // Include the new model
+db.Transactions = require("./Transactions.model.js")(sequelize, Sequelize);
+db.FuturesContractSpecs = require("./FuturesContractSpecs.model.js")(sequelize, Sequelize);
 
 // Relationships
 db.User.hasMany(db.Account, { foreignKey: 'userID' });  // One-to-Many between User and Account
