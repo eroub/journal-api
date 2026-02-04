@@ -10,11 +10,13 @@ exports.list = async (req, res) => {
     const replacements = mode ? [mode] : [];
 
     const [rows] = await db.sequelize.query(
-      `SELECT mode, market_name, token_name, window_ts, first_ts, last_ts,
-              asset,
-              buy_usdc, buy_tokens, avg_entry_price, redeem_usdc,
-              realized_pnl_usd, result, fills
-         FROM poly_positions
+      `SELECT p.mode, p.market_name, p.token_name, p.window_ts, p.first_ts, p.last_ts,
+              p.asset,
+              'unknown' AS strategy,
+              p.buy_usdc, p.buy_tokens, p.avg_entry_price, p.redeem_usdc,
+              p.realized_pnl_usd, p.result, p.fills
+         FROM poly_positions p
+         LEFT JOIN poly_strategies ps ON ps.id = p.strategy_id
          ${modeWhere}
         ORDER BY COALESCE(last_ts, first_ts, 0) DESC
         LIMIT ${limit};`,
