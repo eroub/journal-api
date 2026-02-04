@@ -100,7 +100,7 @@ exports.pnlByRegime = async (req, res) => {
        ${modeWhere}
        GROUP BY btc_regime, pt.mode
        ORDER BY pnl_usd DESC;`,
-      { replacements }
+      { replacements, logging: console.log }
     );
 
     return res.status(200).json({ rows });
