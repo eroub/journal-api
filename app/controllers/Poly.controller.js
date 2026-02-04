@@ -24,7 +24,8 @@ exports.summary = async (req, res) => {
     const [recentTrades] = await db.sequelize.query(
       `SELECT pt.mode, pt.ts_open, pt.window_ts, pt.asset, pt.direction,
               ps.name AS strategy, pt.entry_price, pt.exit_price, pt.result,
-              pt.pnl_usd, pt.implied_pnl_usd
+              pt.pnl_usd, pt.implied_pnl_usd,
+              pt.settled_pnl_usd, pt.settled_result
          FROM poly_trades pt
          JOIN poly_strategies ps ON ps.id = pt.strategy_id
          ${modeWhere}
