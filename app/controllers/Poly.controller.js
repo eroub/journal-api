@@ -76,7 +76,8 @@ exports.performanceByStrategy = async (req, res) => {
 exports.pnlByRegime = async (req, res) => {
   try {
     const mode = req.query.mode; // optional: paper|live
-    const modeWhere = mode ? "WHERE pt.mode = ?" : "";
+    // Important: this query already has a FROM + LEFT JOIN. Use AND, not WHERE.
+    const modeWhere = mode ? "AND pt.mode = ?" : "";
     const replacements = mode ? [mode] : [];
 
     // We join trades to the last paper_zoo run for that window_ts and use BTC label as a proxy.
@@ -95,6 +96,7 @@ exports.pnlByRegime = async (req, res) => {
           GROUP BY window_ts
        ) last_run ON last_run.window_ts = pt.window_ts
        LEFT JOIN poly_runs pr ON pr.id = last_run.max_id
+       WHERE 1=1
        ${modeWhere}
        GROUP BY btc_regime, pt.mode
        ORDER BY pnl_usd DESC;`,
