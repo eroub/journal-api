@@ -2,6 +2,7 @@
 const db = require("../models/index");
 
 // Public: lightweight summary for dashboards
+// NOTE: counts.trades = fills (poly_trades rows).
 exports.summary = async (req, res) => {
   try {
     const mode = req.query.mode; // optional: paper|live
@@ -22,6 +23,16 @@ exports.summary = async (req, res) => {
       { replacements }
     );
 
+    const [positions] = await db.sequelize.query(
+      `SELECT COUNT(*) AS n_positions,
+              ROUND(SUM(COALESCE(realized_pnl_usd, 0)), 4) AS pnl_usd,
+              SUM(CASE WHEN result='win' THEN 1 ELSE 0 END) AS wins,
+              SUM(CASE WHEN result='loss' THEN 1 ELSE 0 END) AS losses
+         FROM poly_positions
+        ${mode ? "WHERE mode = ?" : ""};`,
+      { replacements }
+    );
+
     // For live trades, result/pnl_usd won't be known until settlement.
     // We still expose implied_pnl_usd (max payout - cost) for context.
     const [recentTrades] = await db.sequelize.query(
@@ -39,11 +50,24 @@ exports.summary = async (req, res) => {
       { replacements }
     );
 
+    const pos = positions?.[0] ?? {};
+    const posWins = Number(pos.wins ?? 0);
+    const posLosses = Number(pos.losses ?? 0);
+    const posN = Number(pos.n_positions ?? 0);
+    const posWinrate = posN ? posWins / posN : null;
+
     return res.status(200).json({
       counts: {
         strategies: strategies?.[0]?.n_strategies ?? 0,
         runs: runs?.[0]?.n_runs ?? 0,
-        trades: trades?.[0]?.n_trades ?? 0,
+        trades: trades?.[0]?.n_trades ?? 0, // fills
+        positions: posN,
+      },
+      positions: {
+        pnl_usd: Number(pos.pnl_usd ?? 0),
+        wins: posWins,
+        losses: posLosses,
+        winrate: posWinrate,
       },
       recentTrades,
     });
