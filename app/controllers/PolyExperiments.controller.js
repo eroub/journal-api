@@ -33,7 +33,7 @@ exports.list = async (req, res) => {
          FROM poly_decisions pd
          JOIN poly_strategies ps ON ps.id=pd.strategy_id
          JOIN poly_runs pr ON pr.id=pd.run_id
-        WHERE pd.status='PAPER' OR pd.status='paper'
+        WHERE 1=1
         ORDER BY pr.ts DESC
         LIMIT 5000;`
     );
