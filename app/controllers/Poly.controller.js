@@ -75,8 +75,11 @@ exports.performanceByStrategy = async (req, res) => {
 // Public: PnL by regime label (from poly_runs.regime_json)
 exports.pnlByRegime = async (req, res) => {
   try {
-    // We join trades to the closest run for that window_ts and use BTC label as a proxy.
-    // (Good enough for v1; later we can store regime label directly on trades.)
+    const mode = req.query.mode; // optional: paper|live
+    const modeWhere = mode ? "WHERE pt.mode = ?" : "";
+    const replacements = mode ? [mode] : [];
+
+    // We join trades to the last paper_zoo run for that window_ts and use BTC label as a proxy.
     const [rows] = await db.sequelize.query(
       `SELECT
           JSON_UNQUOTE(JSON_EXTRACT(pr.regime_json, '$.BTC.label')) AS btc_regime,
@@ -92,8 +95,10 @@ exports.pnlByRegime = async (req, res) => {
           GROUP BY window_ts
        ) last_run ON last_run.window_ts = pt.window_ts
        LEFT JOIN poly_runs pr ON pr.id = last_run.max_id
+       ${modeWhere}
        GROUP BY btc_regime, pt.mode
-       ORDER BY pnl_usd DESC;`
+       ORDER BY pnl_usd DESC;`,
+      { replacements }
     );
 
     return res.status(200).json({ rows });
