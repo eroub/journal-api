@@ -4,6 +4,10 @@ const db = require("../models/index");
 // Public: lightweight summary for dashboards
 exports.summary = async (req, res) => {
   try {
+    const mode = req.query.mode; // optional: paper|live
+    const modeWhere = mode ? "WHERE pt.mode = ?" : "";
+    const replacements = mode ? [mode] : [];
+
     const [strategies] = await db.sequelize.query(
       `SELECT COUNT(*) AS n_strategies FROM poly_strategies;`
     );
@@ -11,7 +15,8 @@ exports.summary = async (req, res) => {
       `SELECT COUNT(*) AS n_runs FROM poly_runs;`
     );
     const [trades] = await db.sequelize.query(
-      `SELECT COUNT(*) AS n_trades FROM poly_trades;`
+      `SELECT COUNT(*) AS n_trades FROM poly_trades ${mode ? "WHERE mode = ?" : ""};`,
+      { replacements }
     );
 
     const [recentTrades] = await db.sequelize.query(
@@ -19,8 +24,10 @@ exports.summary = async (req, res) => {
               ps.name AS strategy, pt.entry_price, pt.exit_price, pt.result, pt.pnl_usd
          FROM poly_trades pt
          JOIN poly_strategies ps ON ps.id = pt.strategy_id
+         ${modeWhere}
         ORDER BY pt.ts_open DESC
-        LIMIT 50;`
+        LIMIT 50;`,
+      { replacements }
     );
 
     return res.status(200).json({
