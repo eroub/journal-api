@@ -16,7 +16,6 @@ exports.list = async (req, res) => {
               p.buy_usdc, p.buy_tokens, p.avg_entry_price, p.redeem_usdc,
               p.realized_pnl_usd, p.result, p.fills
          FROM poly_positions p
-         LEFT JOIN poly_strategies ps ON ps.id = p.strategy_id
          ${modeWhere}
         ORDER BY COALESCE(last_ts, first_ts, 0) DESC
         LIMIT ${limit};`,
