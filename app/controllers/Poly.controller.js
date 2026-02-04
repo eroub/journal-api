@@ -15,7 +15,10 @@ exports.summary = async (req, res) => {
       `SELECT COUNT(*) AS n_runs FROM poly_runs;`
     );
     const [trades] = await db.sequelize.query(
-      `SELECT COUNT(*) AS n_trades FROM poly_trades ${mode ? "WHERE mode = ?" : ""};`,
+      `SELECT COUNT(*) AS n_trades
+         FROM poly_trades
+        ${mode ? "WHERE mode = ?" : ""}
+        ${mode ? "AND" : "WHERE"} (asset <> '' AND direction <> '');`,
       { replacements }
     );
 
@@ -29,6 +32,8 @@ exports.summary = async (req, res) => {
          FROM poly_trades pt
          JOIN poly_strategies ps ON ps.id = pt.strategy_id
          ${modeWhere}
+         ${modeWhere ? "" : "WHERE 1=1"}
+         AND (pt.asset <> '' AND pt.direction <> '')
         ORDER BY pt.ts_open DESC
         LIMIT 50;`,
       { replacements }
