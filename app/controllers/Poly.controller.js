@@ -19,9 +19,12 @@ exports.summary = async (req, res) => {
       { replacements }
     );
 
+    // For live trades, result/pnl_usd won't be known until settlement.
+    // We still expose implied_pnl_usd (max payout - cost) for context.
     const [recentTrades] = await db.sequelize.query(
       `SELECT pt.mode, pt.ts_open, pt.window_ts, pt.asset, pt.direction,
-              ps.name AS strategy, pt.entry_price, pt.exit_price, pt.result, pt.pnl_usd
+              ps.name AS strategy, pt.entry_price, pt.exit_price, pt.result,
+              pt.pnl_usd, pt.implied_pnl_usd
          FROM poly_trades pt
          JOIN poly_strategies ps ON ps.id = pt.strategy_id
          ${modeWhere}
@@ -57,7 +60,8 @@ exports.performanceByStrategy = async (req, res) => {
               SUM(CASE WHEN pt.result = 'win' THEN 1 ELSE 0 END) AS wins,
               SUM(CASE WHEN pt.result = 'loss' THEN 1 ELSE 0 END) AS losses,
               ROUND(AVG(pt.entry_price), 4) AS avg_entry,
-              ROUND(SUM(COALESCE(pt.pnl_usd, 0)), 4) AS pnl_usd
+              ROUND(SUM(COALESCE(pt.pnl_usd, 0)), 4) AS pnl_usd,
+              ROUND(SUM(COALESCE(pt.implied_pnl_usd, 0)), 4) AS implied_pnl_usd
          FROM poly_trades pt
          JOIN poly_strategies ps ON ps.id = pt.strategy_id
          ${modeWhere}
