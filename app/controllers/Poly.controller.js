@@ -33,8 +33,8 @@ exports.summary = async (req, res) => {
       { replacements }
     );
 
-    // For live trades, result/pnl_usd won't be known until settlement.
-    // We still expose implied_pnl_usd (max payout - cost) for context.
+    // Recent fills table (poly_trades) is useful for execution auditing,
+    // but performance stats should come from poly_positions (resolved outcomes).
     const [recentTrades] = await db.sequelize.query(
       `SELECT pt.mode, pt.ts_open, pt.window_ts, pt.asset, pt.direction,
               ps.name AS strategy, pt.entry_price, pt.exit_price, pt.result,
