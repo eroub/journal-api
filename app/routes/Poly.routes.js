@@ -1,5 +1,6 @@
 const poly = require("../controllers/Poly.controller");
 const polyPositions = require("../controllers/PolyPositions.controller");
+const polyExperiments = require("../controllers/PolyExperiments.controller");
 
 module.exports = app => {
   var router = require("express").Router();
@@ -9,6 +10,7 @@ module.exports = app => {
   router.get("/performance/strategies", poly.performanceByStrategy);
   router.get("/performance/regime", poly.pnlByRegime);
   router.get("/positions", polyPositions.list);
+  router.get("/experiments", polyExperiments.list);
 
   app.use("/api/poly", router);
 };
