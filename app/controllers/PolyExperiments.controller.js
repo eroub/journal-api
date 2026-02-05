@@ -28,14 +28,21 @@ exports.list = async (req, res) => {
 
     // Pull recent decision rows to infer current param snapshots per strategy.
     // (Full historical grouping can be added later; this gives a usable Experiments page now.)
+    const source = req.query.source ? String(req.query.source) : null;
+
     const [decisions] = await db.sequelize.query(
-      `SELECT pd.strategy_id, ps.name AS strategy, pr.ts as run_ts, pd.fields_json
+      `SELECT pd.strategy_id,
+              ps.name AS strategy,
+              pr.ts as run_ts,
+              pr.source as source,
+              pd.fields_json
          FROM poly_decisions pd
          JOIN poly_strategies ps ON ps.id=pd.strategy_id
          JOIN poly_runs pr ON pr.id=pd.run_id
-        WHERE 1=1
+        WHERE (:source IS NULL OR pr.source = :source)
         ORDER BY pr.ts DESC
-        LIMIT 5000;`
+        LIMIT 5000;`,
+      { replacements: { source } }
     );
 
     // Build latest paramsHash per strategy (most recent seen)
@@ -73,6 +80,7 @@ exports.list = async (req, res) => {
         const n = Number(p.trades || 0);
         return {
           mode: "paper",
+          source: base.source || "paper_zoo",
           experiment: `${base.strategy} ${JSON.stringify(base.params)}`,
           strategy_id: id,
           strategy: base.strategy,
