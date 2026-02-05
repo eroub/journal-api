@@ -24,9 +24,14 @@ exports.tail = async (req, res) => {
     const minutes = Math.max(1, Math.min(60, toMs(req.query.minutes, 15))); // cap 60m
     const maxLines = Math.max(50, Math.min(5000, toMs(req.query.maxLines, 1200)));
 
+    // Optional explicit time range filter (UTC assumed):
+    // ?from=2026-02-05T03:30:00Z&to=2026-02-05T03:45:00Z
+    const from = req.query.from ? Date.parse(String(req.query.from)) : null;
+    const to = req.query.to ? Date.parse(String(req.query.to)) : null;
+
     // If file is missing, return empty (don't 500).
     if (!fs.existsSync(filePath)) {
-      return res.status(200).json({ name, filePath, minutes, lines: [] });
+      return res.status(200).json({ name, filePath, minutes, from, to, lines: [] });
     }
 
     const stat = fs.statSync(filePath);
@@ -50,13 +55,18 @@ exports.tail = async (req, res) => {
       const m = line.match(/^\[(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})\]/);
       if (m) {
         const ts = Date.parse(`${m[1]}T${m[2]}Z`);
-        if (!Number.isNaN(ts) && ts < cutoffMs) continue;
+        if (!Number.isNaN(ts)) {
+          // Range filter wins if provided; otherwise use minutes cutoff.
+          if (from != null && !Number.isNaN(from) && ts < from) continue;
+          if (to != null && !Number.isNaN(to) && ts > to) continue;
+          if ((from == null || Number.isNaN(from)) && (to == null || Number.isNaN(to)) && ts < cutoffMs) continue;
+        }
       }
       lines.push(line);
     }
 
     const trimmed = lines.slice(-maxLines);
-    return res.status(200).json({ name, filePath, minutes, lines: trimmed });
+    return res.status(200).json({ name, filePath, minutes, from, to, lines: trimmed });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
