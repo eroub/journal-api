@@ -368,11 +368,12 @@ exports.compare = async (req, res) => {
     const summary = makeSummary({ minutes });
 
     const rows = leaders.map((l) => {
-      const meta = l.token_id ? tokenMeta[String(l.token_id)] : null;
-      const slug = meta && meta.slug ? meta.slug : l.token_id ? `token:${l.token_id}` : null;
+      const tokenIdStr = l.token_id != null ? String(l.token_id) : '';
+      const meta = tokenIdStr ? tokenMeta[tokenIdStr] : null;
+      const slug = meta && meta.slug ? meta.slug : tokenIdStr ? `token:${tokenIdStr}` : null;
 
       // If we have no meta, call it out explicitly (helps debug token_map coverage).
-      const missingMeta = !!(!meta && l.token_id);
+      const missingMeta = !!(tokenIdStr && !meta);
 
 
       // Find first attempt by tx
@@ -427,7 +428,9 @@ exports.compare = async (req, res) => {
 
         status = 'SKIPPED';
         reason = sk ? (sk.reason || sk.kind) : 'no_attempt_logged';
-        if (missingMeta && reason === 'no_attempt_logged') reason = 'missing_token_map';
+        // If meta is missing, surface it. (Only if it is truly missing.)
+        if (missingMeta) reason = 'missing_token_map';
+        else if (reason === 'missing_token_map') reason = 'no_attempt_logged';
       }
 
       // leader object
