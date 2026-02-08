@@ -497,6 +497,11 @@ exports.compare = async (req, res) => {
           reason_detail = String(richAttempt.resp);
         }
       }
+
+      // Prefer concrete CLOB outcome over generic status mapping.
+      // Example: outcome=no_liquidity_fak is MUCH more informative than clob_400.
+      const reason_best = (richAttempt && richAttempt.outcome) ? String(richAttempt.outcome) : reason;
+
       return {
         ts: new Date(l.t).toISOString(),
         slug,
@@ -506,7 +511,7 @@ exports.compare = async (req, res) => {
         attempt: attDetail,
         attempt_rich: richAttempt || null,
         status,
-        reason,
+        reason: reason_best,
         reason_detail,
         our,
         dpx,
