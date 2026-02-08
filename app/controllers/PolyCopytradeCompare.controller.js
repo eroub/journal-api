@@ -371,6 +371,10 @@ exports.compare = async (req, res) => {
       const meta = l.token_id ? tokenMeta[String(l.token_id)] : null;
       const slug = meta && meta.slug ? meta.slug : l.token_id ? `token:${l.token_id}` : null;
 
+      // If we have no meta, call it out explicitly (helps debug token_map coverage).
+      const missingMeta = !!(!meta && l.token_id);
+
+
       // Find first attempt by tx
       const att = l.tx ? firstAttemptByLeaderTx.get(String(l.tx).toLowerCase()) : null;
       // Find matched fill: prefer dedupe_key from attempt
@@ -423,6 +427,7 @@ exports.compare = async (req, res) => {
 
         status = 'SKIPPED';
         reason = sk ? (sk.reason || sk.kind) : 'no_attempt_logged';
+        if (missingMeta && reason === 'no_attempt_logged') reason = 'missing_token_map';
       }
 
       // leader object
